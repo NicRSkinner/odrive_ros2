@@ -4,8 +4,8 @@
   <name>odrive_ros2</name>
   <version>0.0.0</version>
   <description>ODrive ROS2 package for interacting with ODrives.</description>
-  <maintainer email="nicholas.skinner95@gmail.com">Nick Skinner</maintainer>
-  <license>TODO: License declaration</license>
+  <maintainer email="nskinner@zygenrobotics.com">Nick Skinner</maintainer>
+  <license>MIT License</license>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
