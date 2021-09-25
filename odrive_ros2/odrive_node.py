@@ -34,9 +34,9 @@ class ODriveNode(Node):
             if self.motors_calibrated is False:
                 self.get_logger().info("Motors uncalibrated, running calibration.")
                 self.calibrate_motors()
-            else:
-                self.get_logger().info("Running motors.")
-                self.run()
+
+            self.get_logger().info("Running motors.")
+            self.run()
         elif msg.data is False and self.running is True:
             self.get_logger().info("ODrive received stop command.")
             self.get_logger().info("Stopping motors.")
@@ -145,7 +145,7 @@ class ODriveNode(Node):
         
         if self.drive is not None:
             self.get_logger().info("ODrive found.")
-            self.get_logger().info("ODrive bus voltage: " % self.drive.vbus_voltage)
+            #self.get_logger().info("ODrive bus voltage: " % self.drive.vbus_voltage)
             self.odrive_found = True
         else:
             self.get_logger().error("ODrive not found. Reason unknown.")
@@ -153,6 +153,12 @@ class ODriveNode(Node):
 
     def calibrate_motors(self):
         """Run initial calibration of both motors."""
+        if self.drive.axis0.current_state == AXIS_STATE_CLOSED_LOOP_CONTROL and self.drive.axis1.current_state == AXIS_STATE_CLOSED_LOOP_CONTROL:
+            self.get_logger().info("Motor pre calibrated, trying to start motors")
+            self.motors_calibrated = True
+            self.start_motors()
+            return
+
         self.drive.axis0.requested_state == AXIS_STATE_ENCODER_OFFSET_CALIBRATION
         self.drive.axis1.requested_state == AXIS_STATE_ENCODER_OFFSET_CALIBRATION
 
