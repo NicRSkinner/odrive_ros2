@@ -52,6 +52,7 @@ class ODriveNode(Node):
 
         self.running = True
         self.drive.axis0.controller.input_vel = 0
+        self.drive.axis1.controller.input_vel = 0
 
         self.automation_state = 3
         self.publish_state()
@@ -78,15 +79,15 @@ class ODriveNode(Node):
         """Publish encoder positional data."""
         x = 0
 
-    def velocity_callback(self, msg) -> None:
+    def motor0_velocity_callback(self, msg) -> None:
         """Set velocity of axis0 based on a ROS2 message."""
         if self.running is True:
             self.drive.axis0.controller.input_vel = msg.data
 
-    def position_callback(self, msg) -> None:
+    def motor1_velocity_callback(self, msg) -> None:
         """Set position setpoint of axis1 based on a ROS2 message."""
         if self.running is True:
-            self.drive.axis1.controller.input_pos = msg.data
+            self.drive.axis1.controller.input_vel = msg.data
 
     def publish_velocity(self) -> None:
         """Publish the current velocity."""
@@ -119,13 +120,14 @@ class ODriveNode(Node):
 
         self.state_publisher = self.create_publisher(AutomationState, "/odrive0/automationstate", 3)
         #self.velocity_publisher = self.create_publisher(Float32, "/odrive0/motor0/current_velocity", 3)
-        self.encoder_publisher = self.create_publisher(Int32, "/odrive0/motor0/encoder_counts", 3)
-        self.vbus_voltage_publisher = self.create_publisher(Float32, "/odrive0/vbus_voltage", 3)
+        self.motor0_encoder_publisher = self.create_publisher(Int32, "/odrive0/motor0/encoder_counts", 3)
+        self.motor1_encoder_publisher = self.create_publisher(Int32, "/odrive0/motor1/encoder_counts", 3)
 
-        self.velocity_subscriber = self.create_subscription(Float32, "/odrive0/motor0/input_vel", self.velocity_callback, 10)
+        self.motor0_velocity_subscriber = self.create_subscription(Float32, "/odrive0/motor0/input_vel", self.motor0_velocity_callback, 10)
+        self.motor1_velocity_subscriber = self.create_subscription(Float32, "/odrive0/motor1/input_vel", self.motor1_velocity_callback, 10)
         self.global_run_subscriber = self.create_subscription(Bool, "/safety/run", self.run_callback, qos_profile=base_qos_profile)
         self.force_run_subscriber = self.create_subscription(Bool, "/odrive0/run", self.run_callback, 10)
-        self.position_subscriber = self.create_subscription(Float32, "/odrive0/motor1/input_pos", self.position_callback, 10)
+        self.vbus_voltage_publisher = self.create_publisher(Float32, "/odrive0/vbus_voltage", 3)
 
         self.get_logger().info("Starting timers...")
         self.create_timer(0.1, self.publish_state)
