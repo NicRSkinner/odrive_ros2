@@ -161,11 +161,17 @@ class ODriveNode(Node):
             self.start_motors()
             return
 
+        self.get_logger().info("Starting motor calibration.")
         self.drive.axis0.requested_state == AXIS_STATE_ENCODER_OFFSET_CALIBRATION
         self.drive.axis1.requested_state == AXIS_STATE_ENCODER_OFFSET_CALIBRATION
 
-        if self.drive.axis0.current_state == AXIS_STATE_ENCODER_OFFSET_CALIBRATION or self.drive.axis0.current_state == AXIS_STATE_ENCODER_OFFSET_CALIBRATION:
-            time.sleep(0.1)
+        time.sleep(10)
+
+        if self.drive.axis0.current_state == AXIS_STATE_ENCODER_OFFSET_CALIBRATION or self.drive.axis1.current_state == AXIS_STATE_ENCODER_OFFSET_CALIBRATION:
+            self.get_logger().info("Motors calibrating.")
+            time.sleep(1)
+
+        self.get_logger().info("Calibration finished.")
 
         self.motors_calibrated = True
 
