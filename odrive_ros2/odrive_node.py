@@ -77,23 +77,26 @@ class ODriveNode(Node):
 
     def publish_encoder(self) -> None:
         """Publish encoder positional data."""
-        x = 0
+        msg0 = Int32()
+        msg1 = Int32()
+
+        msg0 = self.drive.axis0.encoder.shadow_count
+        msg1 = self.drive.axis1.encoder.shadow_count
+
+        self.motor0_encoder_publisher.publish(msg0)
+        self.motor1_encoder_publisher.publish(msg1)
 
     def motor0_velocity_callback(self, msg) -> None:
         """Set velocity of axis0 based on a ROS2 message."""
         if self.running is True:
-            self.drive.axis0.controller.input_vel = msg.data
+            # This motor spins backwards.
+            # For some reason it has to be this way, as the calibration for this motor is backwards.
+            self.drive.axis0.controller.input_vel = -msg.data
 
     def motor1_velocity_callback(self, msg) -> None:
         """Set position setpoint of axis1 based on a ROS2 message."""
         if self.running is True:
             self.drive.axis1.controller.input_vel = msg.data
-
-    def publish_velocity(self) -> None:
-        """Publish the current velocity."""
-        msg = Float32()
-        msg.data = 0
-        self.velocity_publisher.publish(msg)
 
 
     def publish_vbus_voltage(self) -> None:
@@ -129,11 +132,15 @@ class ODriveNode(Node):
         self.force_run_subscriber = self.create_subscription(Bool, "/odrive0/run", self.run_callback, 10)
         self.vbus_voltage_publisher = self.create_publisher(Float32, "/odrive0/vbus_voltage", 3)
 
-        self.get_logger().info("Starting timers...")
+        self.get_logger().info("Starting state publisher timer")
         self.create_timer(0.1, self.publish_state)
-        #rclpy.Timer(rclpy.Duration(1.0/10.0), self.publish_velocity)
-
+        
+        self.get_logger().info("Attempting to find ODrive.")
         self.find_odrive()
+        self.get_logger().info("ODrive found")
+
+        self.get_logger().info("Starting timers...")
+        self.create_timer(0.1, self.publish_encoder)
 
     def find_odrive(self):
         """Find ODrive. Times out if not found."""
