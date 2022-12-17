@@ -140,7 +140,7 @@ class ODriveNode(Node):
         self.get_logger().info("ODrive found")
 
         self.get_logger().info("Starting timers...")
-        self.create_timer(0.1, self.publish_encoder)
+        #self.create_timer(0.1, self.publish_encoder)
 
     def find_odrive(self):
         """Find ODrive. Times out if not found."""
