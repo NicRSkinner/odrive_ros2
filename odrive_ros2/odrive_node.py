@@ -28,12 +28,12 @@ class ODriveNode(Node):
         """Execute start/stop based on global ready message feedback."""
         if msg.data is True and self.odrive_found is False:
             self.find_odrive()
-        
+
         if msg.data is True and self.running is False and self.odrive_found is True:
             self.get_logger().info("ODrive received start/run command.")
             if self.motors_calibrated is False:
                 self.get_logger().info("Motors uncalibrated, running calibration.")
-                self.calibrate_motors()
+                #self.calibrate_motors()
 
             self.get_logger().info("Running motors.")
             self.run()
@@ -47,7 +47,7 @@ class ODriveNode(Node):
         self.get_logger().info("Starting Motors...")
         self.automation_state = 4
         self.publish_state()
-        self.start_motors()
+        #self.start_motors()
         self.get_logger().info("Motors ready.")
 
         self.running = True
@@ -134,7 +134,7 @@ class ODriveNode(Node):
 
         self.get_logger().info("Starting state publisher timer")
         self.create_timer(0.1, self.publish_state)
-        
+
         self.get_logger().info("Attempting to find ODrive.")
         self.find_odrive()
         self.get_logger().info("ODrive found")
@@ -151,14 +151,14 @@ class ODriveNode(Node):
         except TimeoutError:
             self.get_logger().error("ODrive not found/timed out. Plug in ODrive and retry.")
             return
-        
+
         if self.drive is not None:
             self.get_logger().info("ODrive found.")
             #self.get_logger().info("ODrive bus voltage: " % self.drive.vbus_voltage)
             self.odrive_found = True
         else:
             self.get_logger().error("ODrive not found. Reason unknown.")
-            
+
 
     def calibrate_motors(self):
         """Run initial calibration of both motors."""
