@@ -91,12 +91,12 @@ class ODriveNode(Node):
         if self.running is True:
             # This motor spins backwards.
             # For some reason it has to be this way, as the calibration for this motor is backwards.
-            self.drive.axis0.controller.input_vel = -msg.data
+            self.drive.axis0.controller.input_vel = msg.data
 
     def motor1_velocity_callback(self, msg) -> None:
         """Set position setpoint of axis1 based on a ROS2 message."""
         if self.running is True:
-            self.drive.axis1.controller.input_vel = msg.data
+            self.drive.axis1.controller.input_vel = -msg.data
 
 
     def publish_vbus_voltage(self) -> None:
