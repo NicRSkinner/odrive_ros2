@@ -128,7 +128,7 @@ class ODriveNode(Node):
 
         self.motor0_velocity_subscriber = self.create_subscription(Float32, "/odrive0/motor0/input_vel", self.motor0_velocity_callback, 10)
         self.motor1_velocity_subscriber = self.create_subscription(Float32, "/odrive0/motor1/input_vel", self.motor1_velocity_callback, 10)
-        self.global_run_subscriber = self.create_subscription(Bool, "/safety/run", self.run_callback, qos_profile=base_qos_profile)
+        self.global_run_subscriber = self.create_subscription(Bool, "/safety/run", self.run_callback, qos_profile=1)
         self.force_run_subscriber = self.create_subscription(Bool, "/odrive0/run", self.run_callback, 10)
         self.vbus_voltage_publisher = self.create_publisher(Float32, "/odrive0/vbus_voltage", 3)
 
